@@ -10,7 +10,12 @@ RUN apt-get install -y wget
 
 # install Android SDK dependencies
 RUN apt-get install -y openjdk-7-jre-headless lib32z1 lib32ncurses5 lib32bz2-1.0 g++-multilib
-    
+RUN apt-get install -y python-setuptools python-dev build-essential
+
+RUN easy_install supervisor pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+
 # Main Android SDK
 RUN wget -qO- "http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz" | tar -zxv -C /opt/
 RUN echo y | /opt/android-sdk-linux/tools/android update sdk --all --filter platform-tools,build-tools-20.0.0 --no-ui --force
