@@ -8,9 +8,29 @@ MAINTAINER Andreas Lüdeke
 RUN apt-get update
 RUN apt-get install -y wget
 
+# ruby installation
+
+RUN set -ex \
+	&& buildDeps=' \
+		ruby \
+	' \
+	&& apt-get update \
+	&& curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p481.tar.gz" \
+	&& tar -xvzf ruby-2.0.0-p481.tar.gz
+	&& rm ruby-2.0.0-p481.tar.gz
+        && cd ruby-2.0.0-p481/                                                     
+        && ./configure --prefix=/usr/local  
+        && make
+        && make install 
+
 # install Android SDK dependencies
 RUN apt-get install -y openjdk-7-jre-headless lib32z1 lib32ncurses5 lib32bz2-1.0 g++-multilib
-    
+RUN apt-get install -y python-setuptools python-dev build-essential
+
+RUN easy_install supervisor pip
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+
 # Main Android SDK
 RUN wget -qO- "http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz" | tar -zxv -C /opt/
 RUN echo y | /opt/android-sdk-linux/tools/android update sdk --all --filter platform-tools,build-tools-20.0.0 --no-ui --force
